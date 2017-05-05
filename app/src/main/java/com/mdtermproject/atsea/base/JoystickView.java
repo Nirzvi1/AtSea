@@ -291,7 +291,7 @@ public class JoystickView extends View implements Runnable {
 
     /**
      * This is called during layout when the size of this view has changed.
-     * Here we get the center of the view and the radius to rotate all the shapes.
+     * Here we get the center of the view and the radius to internal all the shapes.
      *
      * @param w Current width of this view.
      * @param h Current height of this view.
@@ -416,7 +416,7 @@ public class JoystickView extends View implements Runnable {
             mPosY = (int) ((mPosY - mCenterY) * mBorderRadius / abs + mCenterY);
         }
 
-        // to force a new rotate
+        // to force a new internal
         invalidate();
 
         return true;

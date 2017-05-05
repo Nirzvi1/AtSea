@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.mdtermproject.atsea.R;
 import com.mdtermproject.atsea.graphics.CanvasView;
-import com.mdtermproject.atsea.graphics.GraphicsBase;
+import com.mdtermproject.atsea.graphics.Graphics;
 
 public class MainActivity extends Activity {
 
@@ -15,28 +15,32 @@ public class MainActivity extends Activity {
 
     private JoystickView joystick;
 
+    public static String FILE_SAVE = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        GraphicsBase.initialize(getResources());
+        Graphics.initialize(getResources());
+
+        FILE_SAVE = getFilesDir().getAbsolutePath();
 
         fore = (CanvasView) findViewById(R.id.foreground);
-        fore.setDrawRunnable(GraphicsBase.FOREGROUND_DRAW);
+        fore.setDrawRunnable(Graphics.FOREGROUND_DRAW);
 
         back = (CanvasView) findViewById(R.id.background);
-        back.setDrawRunnable(GraphicsBase.BACKGROUND_DRAW);
+        back.setDrawRunnable(Graphics.BACKGROUND_DRAW);
 
         joystick = (JoystickView) findViewById(R.id.move);
         joystick.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
             public void onMove(int angle, int strength) {
-                GameLoop.player.attemptSetMotion(strength, angle);
+                Game.getPlayer().slowlySetMotion(strength, angle);
             }
         });
 
-        GameLoop.init(fore, back);
-        GameLoop.loop();
+        Game.init(fore, back, getResources());
+        Game.start();
     }
 }

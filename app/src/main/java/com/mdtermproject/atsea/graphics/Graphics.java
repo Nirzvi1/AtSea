@@ -1,17 +1,16 @@
 package com.mdtermproject.atsea.graphics;
 
 import android.content.res.Resources;
-import android.content.res.XmlResourceParser;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.util.Log;
 
-import com.mdtermproject.atsea.base.GameLoop;
+import com.mdtermproject.atsea.base.Game;
 import com.mdtermproject.atsea.R;
+import com.mdtermproject.atsea.base.Map;
+import com.mdtermproject.atsea.utils.NewMatrix;
 
 import java.util.ArrayList;
 
@@ -19,7 +18,7 @@ import java.util.ArrayList;
  * Created by FIXIT on 2017-05-04.
  */
 
-public class GraphicsBase {
+public class Graphics {
 
     /*
     CONSTANTS
@@ -31,9 +30,6 @@ public class GraphicsBase {
     public final static int PLAYER_ID = 0;
     public static int TILE_START_ID;
 
-    private final static Matrix DRAW_PLAYER = new Matrix();
-
-    private static Map map;
     public final static int TILE_SIZE = 100;
 
     /*
@@ -44,17 +40,17 @@ public class GraphicsBase {
         public void onDraw(Canvas c) {
             c.drawRect(0, 0, c.getWidth(), c.getHeight(), OCEAN);
 
-            if (map != null) {
-                map.drawIsland(c, GameLoop.player.getTranslation(), 0);
+            if (Game.getMap() != null) {
+                Game.getMap().drawMap(c, Game.getPlayer().getShipExternal());
             }//if
+
         }//onDraw
     };
 
     public final static DrawRunnable FOREGROUND_DRAW = new DrawRunnable() {
         @Override
         public void onDraw(Canvas c) {
-            drawBitmap(c, PLAYER_ID, GameLoop.player.getRotation());
-            Log.i("!!!", GameLoop.player.getRotation().toString());
+            drawBitmap(c, PLAYER_ID, Game.getPlayer().getShipInternal());
         }
     };
 
@@ -70,8 +66,6 @@ public class GraphicsBase {
         TEMP.setStyle(Paint.Style.FILL);
 
         loadImages(res);
-        parseMap(res, R.xml.map1);
-
     }//initialize
 
     public static void loadImages(Resources res) {
@@ -79,7 +73,7 @@ public class GraphicsBase {
 
         try {
 
-            images.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(res, R.drawable.ship_5), 66, 113, false));
+            images.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(res, R.drawable.ship_5), 88, 151, false));
 
             TILE_START_ID = images.size();
 
@@ -99,36 +93,6 @@ public class GraphicsBase {
         }//catch;
     }//loadImages
 
-    public static void parseMap(Resources res, int mapId) {
-        XmlResourceParser xml = res.getXml(mapId);
-
-        try {
-            int event = xml.getEventType();
-            while (event != XmlResourceParser.END_DOCUMENT) {
-
-                if (event == XmlResourceParser.START_TAG) {
-                    if (xml.getName().equals("Island")) {
-                        int x = xml.getAttributeIntValue(null, "x", 0);
-                        int y = xml.getAttributeIntValue(null, "y", 0);
-                        int w = xml.getAttributeIntValue(null, "w", 0);
-                        int h = xml.getAttributeIntValue(null, "h", 0);
-
-                        map.addIsland(x, y, w, h);
-                    } else if (xml.getName().equals("Map")) {
-                        int w = Integer.parseInt(xml.getAttributeValue(null, "w"));
-                        int h = Integer.parseInt(xml.getAttributeValue(null, "h"));
-                        int numIslands = Integer.parseInt(xml.getAttributeValue(null, "num_islands"));
-
-                        map = new Map(w, h, numIslands);
-                    }//else
-                }//else
-
-                event = xml.next();
-            }//while
-        } catch (Exception e) {
-            e.printStackTrace();
-        }//catch
-    }//parseMap
 
     /*
     IMAGE METHODS
@@ -144,9 +108,17 @@ public class GraphicsBase {
     }//drawBitmap
 
 
-    public static void drawBitmap(Canvas c, int id, Matrix transform) {
+    public static void drawBitmap(Canvas c, int id, NewMatrix transform) {
+
         if (id < images.size()) {
-            c.drawBitmap(images.get(id), transform, new Paint());
+            float x = transform.getX();
+            float y = transform.getY();
+            float x2 = transform.getX() + images.get(id).getWidth();
+            float y2 = transform.getY() + images.get(id).getHeight();
+
+            if (x < c.getWidth() && y < c.getHeight() && x2 > 0 && y2 > 0) {
+                c.drawBitmap(images.get(id), transform, new Paint());
+            }//if
         }//if
     }//void
 

@@ -12,6 +12,7 @@ import android.view.View;
 public class CanvasView extends View {
 
     private DrawRunnable d;
+    private volatile boolean drawCompleted = true;
 
     public CanvasView(Context context, AttributeSet attr) {
         super(context, attr);
@@ -24,6 +25,15 @@ public class CanvasView extends View {
     public void onDraw(Canvas c) {
         if (d != null) {
             d.onDraw(c);
+        }//if
+
+        drawCompleted = true;
+    }
+
+    public void refresh() {
+        if (drawCompleted) {
+            drawCompleted = false;
+            postInvalidate();
         }//if
     }
 
