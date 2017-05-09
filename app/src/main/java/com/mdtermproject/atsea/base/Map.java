@@ -3,6 +3,8 @@ package com.mdtermproject.atsea.base;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.PointF;
 import android.util.Log;
 
 import com.mdtermproject.atsea.graphics.Graphics;
@@ -21,6 +23,9 @@ public class Map {
     private byte[] mapArray;
     private Bitmap miniMapBitmap;
 
+    private PointF spawn;
+    private PointF exit;
+
     public Map(int w, int h, byte[] raw) {
         this.w = w;
         this.h = h;
@@ -32,6 +37,22 @@ public class Map {
 
         miniMapBitmap = generateMiniMapBitmap();
     }//Map
+
+    public void setSpawn(PointF spawn) {
+        this.spawn = spawn;
+    }//setSpawn
+
+    public void setExit(PointF exit) {
+        this.exit = exit;
+    }//setSpawn
+
+    public PointF getSpawn() {
+        return spawn;
+    }
+
+    public PointF getExit() {
+        return exit;
+    }
 
     public int getWidth() {
         return w;
@@ -102,8 +123,6 @@ public class Map {
 
         float x = translate.getX() * (miniMapBitmap.getWidth() / (float) (w * Graphics.TILE_SIZE)) + (c.getWidth() - miniMapBitmap.getWidth());
         float y = translate.getY() * (miniMapBitmap.getHeight() / (float) (h * Graphics.TILE_SIZE)) + (c.getHeight() - miniMapBitmap.getHeight());
-
-        Log.i("Coord", x + ", " + y);
 
         c.drawRect(x, y, x + 5, y + 5, Graphics.SMALL_MAP_PLAYER);
 

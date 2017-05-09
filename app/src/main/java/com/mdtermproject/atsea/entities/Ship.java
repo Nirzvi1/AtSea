@@ -1,5 +1,7 @@
 package com.mdtermproject.atsea.entities;
 
+import android.graphics.PointF;
+
 import com.mdtermproject.atsea.base.Game;
 import com.mdtermproject.atsea.graphics.Graphics;
 import com.mdtermproject.atsea.utils.TransformationMatrix;
@@ -20,9 +22,7 @@ public class Ship {
     private TransformationMatrix rotate;
     private TransformationMatrix translate;
 
-    private float accel = 0.1f;
-    private float angleVel = 0.5f;
-    private float maxVel = 0.06f;
+    private ShipBuild shipStats;
 
     public Ship() {
 
@@ -31,15 +31,16 @@ public class Ship {
 
         translate = new TransformationMatrix();
         translate.setDimensions(Graphics.DRAW_PLAYER.getW(), Graphics.DRAW_PLAYER.getH());
-        translate.translate(Graphics.DRAW_PLAYER.getX(), Graphics.DRAW_PLAYER.getY());
 
         this.imgId = Graphics.PLAYER_ID;
+
+        shipStats = new ShipBuild(0.1f, 0.06f, 0.5f, 0, 0);
 
     }//Ship
 
     public void setTargetMotion(float v, float angle) {
 
-        targetV = maxVel * (v / 100);
+        targetV = shipStats.getMaxVel() * (v / 100);
 
         if (v == 0) {
             angle = 360 - rotate.getAngle();
@@ -64,11 +65,11 @@ public class Ship {
     }//filterAngle
 
     public float dampenAngularVelocity(float angleTurn) {
-        return v * angleVel * angleTurn;
+        return v * shipStats.getAngleVel() * angleTurn;
     }
 
     public float dampenAccel(float v) {
-        return this.v + accel * (v - this.v);
+        return this.v + shipStats.getAccel() * (v - this.v);
     }
 
     public TransformationMatrix getRotate() {
@@ -78,6 +79,18 @@ public class Ship {
     public TransformationMatrix getTranslate() {
         return translate;
     }//getTranslate
+
+    public void rotate(float angle) {
+        rotate.rotate(angle);
+    }//rotate
+
+    public void translate(float dx, float dy) {
+        translate.translate(dx, dy);
+    }//translate
+
+    public void setTranslate(PointF move) {
+        translate.setTranslate(move.x, move.y);
+    }
 
     public void update(int latency) {
 

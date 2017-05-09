@@ -2,6 +2,8 @@ package com.mdtermproject.atsea.base;
 
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
+import android.graphics.Point;
+import android.graphics.PointF;
 import android.util.Base64;
 import android.util.Log;
 
@@ -34,13 +36,19 @@ public class Game {
         back = b;
 
         map = parseTMXMap(res, R.xml.southmount_isles);
+
         player = new Ship();
+        player.setTranslate(map.getSpawn());
+
         miniMap.refresh();
     }
 
     public static Map parseTMXMap(Resources res, int mapId) {
         XmlResourceParser xml = res.getXml(mapId);
         Map result = null;
+
+        PointF spawn = new PointF();
+        PointF exit = new PointF();
 
         int width = 0;
         int height = 0;
@@ -56,6 +64,12 @@ public class Game {
                     } else if (xml.getName().equals("layer")) {
                         width = xml.getAttributeIntValue(null, "width", 0);
                         height = xml.getAttributeIntValue(null, "height", 0);
+                    } else if (xml.getName().equals("object")) {
+                        if (xml.getAttributeValue(null, "type").equals("spawn")) {
+                            spawn = new PointF(xml.getAttributeFloatValue(null, "x", 0), xml.getAttributeFloatValue(null, "y", 0));
+                        } else if (xml.getAttributeValue(null, "type").equals("exit")) {
+                            exit = new PointF(xml.getAttributeFloatValue(null, "x", 0), xml.getAttributeFloatValue(null, "y", 0));
+                        }//else
                     }//elseif
                 } else if (READ_STRING) {
                     byte[] tileset = Base64.decode(xml.getText(), 0);
@@ -69,6 +83,9 @@ public class Game {
         } catch (Exception e) {
             e.printStackTrace();
         }//catch
+
+        result.setSpawn(spawn);
+        result.setExit(exit);
 
         return result;
     }//parseMap
@@ -104,7 +121,6 @@ public class Game {
                         miniMap.refresh();
                         REFRESH_MINIMAP = false;
                     }//if
-
                 }//while
 
             }
