@@ -1,6 +1,7 @@
 package com.mdtermproject.atsea.base;
 
 import android.app.Activity;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -22,8 +23,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Graphics.initialize(getResources());
-
         FILE_SAVE = getFilesDir().getAbsolutePath();
 
         fore = (CanvasView) findViewById(R.id.foreground);
@@ -31,6 +30,11 @@ public class MainActivity extends Activity {
 
         back = (CanvasView) findViewById(R.id.background);
         back.setDrawRunnable(Graphics.BACKGROUND_DRAW);
+
+        Point windowSize = new Point();
+        getWindowManager().getDefaultDisplay().getSize(windowSize);
+
+        Graphics.initialize(getResources(), windowSize.x, windowSize.y);
 
         joystick = (JoystickView) findViewById(R.id.move);
         joystick.setOnMoveListener(new JoystickView.OnMoveListener() {

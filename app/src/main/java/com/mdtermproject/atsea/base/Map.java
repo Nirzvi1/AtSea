@@ -11,10 +11,9 @@ import com.mdtermproject.atsea.utils.NewMatrix;
 
 public class Map {
 
-    int w;
-    int h;
-
-    byte[] mapArray;
+    private int w;
+    private int h;
+    private byte[] mapArray;
 
     public Map(int w, int h, byte[] raw) {
         this.w = w;
@@ -27,14 +26,23 @@ public class Map {
     }//Map
 
     public void drawMap(Canvas c, NewMatrix translation) {
-        int xIdx = (int) translation.getX() / Graphics.TILE_SIZE;
-        int yIdx = (int) translation.getY() / Graphics.TILE_SIZE;
+        //coordinate of top-leftmost tile to draw
+        int xIdx = Math.max(0, (int) translation.getX() / Graphics.TILE_SIZE);
+        int yIdx = Math.max(0, (int) translation.getY() / Graphics.TILE_SIZE);
 
         int screenWidthInTiles = (c.getWidth() / Graphics.TILE_SIZE) + 2;
         int screenHeightInTiles = (c.getHeight() / Graphics.TILE_SIZE) + 2;
 
         int xTileOffset = (int) (-translation.getX() % Graphics.TILE_SIZE);
         int yTileOffset = (int) (-translation.getY() % Graphics.TILE_SIZE);
+
+        if(xIdx == 0) {
+            xTileOffset = Math.min(0, xTileOffset);
+        }//if
+
+        if(yIdx == 0) {
+            yTileOffset = Math.min(0, yTileOffset);
+        }//if
 
         for (int x = xIdx; x < xIdx + screenWidthInTiles; x++) {
             for (int y = yIdx; y < yIdx + screenHeightInTiles; y++) {

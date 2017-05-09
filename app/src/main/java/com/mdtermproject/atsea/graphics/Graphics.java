@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 
 import com.mdtermproject.atsea.base.Game;
 import com.mdtermproject.atsea.R;
@@ -31,6 +32,8 @@ public class Graphics {
     public static int TILE_START_ID;
 
     public final static int TILE_SIZE = 100;
+
+    public static NewMatrix DRAW_PLAYER;
 
     /*
     DRAW RUNNABLES
@@ -58,7 +61,7 @@ public class Graphics {
     INITIALIZATION METHODS
      */
 
-    public static void initialize(Resources res) {
+    public static void initialize(Resources res, int canvasWidth, int canvasHeight) {
         OCEAN.setColor(Color.rgb(52, 154, 217));
         OCEAN.setStyle(Paint.Style.FILL);
 
@@ -66,6 +69,10 @@ public class Graphics {
         TEMP.setStyle(Paint.Style.FILL);
 
         loadImages(res);
+
+        DRAW_PLAYER = new NewMatrix();
+        DRAW_PLAYER.translate(canvasWidth / 2 - 88 / 2, canvasHeight / 2 - 151 / 2);
+        Log.i("Hello", DRAW_PLAYER.getX() + ", " + DRAW_PLAYER.getY());
     }//initialize
 
     public static void loadImages(Resources res) {

@@ -19,7 +19,7 @@ public class Game {
     private static boolean REFRESH_BACKGROUND = false;
 
     private static Map map;
-    private static Ship player = new Ship();
+    private static Ship player;
 
     private static CanvasView fore;
     private static CanvasView back;
@@ -29,6 +29,7 @@ public class Game {
         back = b;
 
         map = parseTMXMap(res, R.xml.map3);
+        player = new Ship();
     }
 
     public static Map parseTMXMap(Resources res, int mapId) {

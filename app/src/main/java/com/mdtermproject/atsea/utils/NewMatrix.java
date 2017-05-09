@@ -1,6 +1,7 @@
 package com.mdtermproject.atsea.utils;
 
 import android.graphics.Matrix;
+import android.util.Log;
 
 /**
  * Created by FIXIT on 2017-05-04.
