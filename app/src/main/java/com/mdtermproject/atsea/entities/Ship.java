@@ -128,6 +128,7 @@ public class Ship {
                 Game.refreshBackground();
             }//if
 
+            Log.i("Player", "Internal - " + internal + "; External - " + external);
 
         }//if
 
