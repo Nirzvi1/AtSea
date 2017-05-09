@@ -1,12 +1,8 @@
 package com.mdtermproject.atsea.entities;
 
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.util.Log;
-
 import com.mdtermproject.atsea.base.Game;
 import com.mdtermproject.atsea.graphics.Graphics;
-import com.mdtermproject.atsea.utils.NewMatrix;
+import com.mdtermproject.atsea.utils.TransformationMatrix;
 
 /**
  * Created by FIXIT on 2017-05-04.
@@ -21,117 +17,123 @@ public class Ship {
 
     private volatile float targetAngle = 0;
 
-    private NewMatrix internal;
-    private NewMatrix external;
+    private TransformationMatrix rotate;
+    private TransformationMatrix translate;
 
-    private double accel = 0.3;
-    private double angleVel = 0.3;
+    private float accel = 0.1f;
+    private float angleVel = 0.5f;
+    private float maxVel = 0.06f;
 
     public Ship() {
-        internal = new NewMatrix();
-        internal.setDimensions(88, 151);
-        internal.translate(Graphics.DRAW_PLAYER.getX(), Graphics.DRAW_PLAYER.getY());
-        internal.postRotate(-90, internal.getX() + internal.getW() / 2, internal.getY() + internal.getH() / 2);
 
-        external = new NewMatrix();
+        rotate = new TransformationMatrix();
+        rotate.setDimensions(Graphics.DRAW_PLAYER.getW(), Graphics.DRAW_PLAYER.getH());
+
+        translate = new TransformationMatrix();
+        translate.setDimensions(Graphics.DRAW_PLAYER.getW(), Graphics.DRAW_PLAYER.getH());
+        translate.translate(Graphics.DRAW_PLAYER.getX(), Graphics.DRAW_PLAYER.getY());
 
         this.imgId = Graphics.PLAYER_ID;
 
     }//Ship
 
-    public void setPosition(float x, float y) {
-        external.setTranslate(x, -y);
-    }//setPosition
+    public void setTargetMotion(float v, float angle) {
 
-    public void setMotion(float v, float angle) {
+        targetV = maxVel * (v / 100);
 
-        this.v = v;
-
-        if (v > 0) {
-            if (internal.getAngle() > 180 + angle) {
-                angle += 360;
-            } else if (internal.getAngle() < angle - 180) {
-                angle -= 360;
-            }//elseif
-
-            rotate(internal.getAngle() - angle);
+        if (v == 0) {
+            angle = 360 - rotate.getAngle();
         }//if
-    }//setMotion
 
-    public void slowlySetMotion(float v, float angle) {
-
-        targetV = v;
         targetAngle = angle;
-    }//void
+    }//setTargetMotion
 
     public float filterAngle(float angle) {
-        return (float) (internal.getAngle() + v / 100 * angleVel * Math.signum(angle - internal.getAngle()) * Math.pow(Math.abs(angle - internal.getAngle()), 0.5));
+
+        angle = (angle % 360 + 360) % 360;
+
+        if (angle > 180) {
+            angle -= 360;
+        }//if
+
+        if (Math.abs(rotate.getAngle() - angle) > 180) {
+            angle += Math.signum(rotate.getAngle() - angle) * 360;
+        }//if
+
+        return angle;
+    }//filterAngle
+
+    public float dampenAngularVelocity(float angleTurn) {
+        return v * angleVel * angleTurn;
     }
 
-    public float filterVelocity(float v) {
-        return (float) (this.v + accel * (v - this.v));
+    public float dampenAccel(float v) {
+        return this.v + accel * (v - this.v);
     }
 
-    public Bitmap getImage() {
-        return Graphics.getImageFromId(imgId);
-    }//Bitmap
-
-    public Matrix getFullMatrix() {
-        Matrix result = new Matrix();
-        result.setRotate(internal.getAngle(), external.getX() + internal.getW() / 2, external.getY() + internal.getH() / 2);
-        return internal;
+    public TransformationMatrix getRotate() {
+        return rotate;
     }
 
-    public NewMatrix getShipInternal() {
-        return internal;
-    }
-
-    public NewMatrix getShipExternal() {
-        return external;
-    }
-
-    public void rotate(float angdeg) {
-        internal.rotate(angdeg, internal.getX() + internal.getW() / 2, internal.getY() + internal.getH() / 2);
-    }
-
-    public void translate(float x, float y) {
-        external.translate(x, -y);
-    }
+    public TransformationMatrix getTranslate() {
+        return translate;
+    }//getTranslate
 
     public void update(int latency) {
-        double dx = v * 0.001 * Math.cos(Math.toRadians(internal.getAngle())) * latency;
-        double dy = v * 0.001 * Math.sin(Math.toRadians(internal.getAngle())) * latency;
 
-        this.v = filterVelocity(this.targetV);
+        this.v = dampenAccel(this.targetV);
 
-        if (v > 0) {
+        if (Math.round(100 * v) > -1) {
 
-            if (internal.getAngle() - targetAngle > 180) {
-                targetAngle += 360;
-            } else if (internal.getAngle() - targetAngle < -180) {
-                targetAngle -= 360;
-            }//elseif
+            float turn = dampenAngularVelocity(filterAngle(360 - targetAngle) - rotate.getAngle());
 
-//            Log.i("Info", internal.getAngle() + ", " + dx + ", " + dy + ", " + v + ", " + targetAngle);
+            rotate.rotate(turn);
+            Game.refreshForeground();
 
-            float turn = internal.getAngle() - filterAngle(targetAngle);
-
-            rotate(turn);
+            float dx = (float) (v * Math.cos(Math.toRadians(rotate.getAngle())) * latency);
+            float dy = (float) (v * Math.sin(Math.toRadians(rotate.getAngle())) * latency);
 
             if (Math.abs(turn) > 0) {
                 Game.refreshForeground();
             }//if
 
-            translate((float) dx, (float) dy);
+            translate.postTranslate(dx, dy);
 
-            if (Math.hypot(dx, dy) > 0.01) {
+            if (Game.getMap().doesCollide(getCorners()) != -1) {
+                translate.postTranslate(-dx, -dy);
+            } else if (Math.hypot(dx, dy) > 0.01) {
                 Game.refreshBackground();
+                Game.refreshMiniMap();
             }//if
-
-            Log.i("Player", "Internal - " + internal + "; External - " + external);
 
         }//if
 
+
     }//update
+
+    public double[][] getCorners() {
+        double[][] corners = new double[4][2];
+
+        float centreX = translate.getX() + translate.getW() / 2;
+        float centreY = translate.getY() + translate.getH() / 2;
+
+        double rad = Math.toRadians(rotate.getAngle());
+        double halfW = translate.getW() / 2;
+        double halfH = translate.getH() / 2;
+
+        corners[0][0] = centreX + (-halfW)*Math.cos(rad) - (-halfH)*Math.sin(rad);
+        corners[0][1] = centreY + (-halfW)*Math.sin(rad) + (-halfH)*Math.cos(rad);
+
+        corners[1][0] = centreX + (halfW)*Math.cos(rad) - (-halfH)*Math.sin(rad);
+        corners[1][1] = centreY + (halfW)*Math.sin(rad) + (-halfH)*Math.cos(rad);
+
+        corners[2][0] = centreX + (halfW)*Math.cos(rad) - (halfH)*Math.sin(rad);
+        corners[2][1] = centreY + (halfW)*Math.sin(rad) + (halfH)*Math.cos(rad);
+
+        corners[3][0] = centreX + (-halfW)*Math.cos(rad) - (halfH)*Math.sin(rad);
+        corners[3][1] = centreY + (-halfW)*Math.sin(rad) + (halfH)*Math.cos(rad);
+
+        return corners;
+    }
 
 }

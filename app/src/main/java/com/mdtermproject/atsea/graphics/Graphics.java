@@ -6,12 +6,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 
 import com.mdtermproject.atsea.base.Game;
 import com.mdtermproject.atsea.R;
-import com.mdtermproject.atsea.base.Map;
-import com.mdtermproject.atsea.utils.NewMatrix;
+import com.mdtermproject.atsea.utils.TransformationMatrix;
 
 import java.util.ArrayList;
 
@@ -25,7 +23,9 @@ public class Graphics {
     CONSTANTS
      */
     public final static Paint OCEAN = new Paint();
-    public final static Paint TEMP = new Paint();
+    public final static Paint SMALL_MAP_BACKGROUND = new Paint();
+    public final static Paint SMALL_MAP_FOREGROUND = new Paint();
+    public final static Paint SMALL_MAP_PLAYER = new Paint();
 
     private static ArrayList<Bitmap> images;
     public final static int PLAYER_ID = 0;
@@ -33,7 +33,9 @@ public class Graphics {
 
     public final static int TILE_SIZE = 100;
 
-    public static NewMatrix DRAW_PLAYER;
+    public final static int SMALL_MAP_SIZE = 200;
+
+    public static TransformationMatrix DRAW_PLAYER;
 
     /*
     DRAW RUNNABLES
@@ -43,8 +45,11 @@ public class Graphics {
         public void onDraw(Canvas c) {
             c.drawRect(0, 0, c.getWidth(), c.getHeight(), OCEAN);
 
+            TransformationMatrix translation = Game.getPlayer().getTranslate().clone();
+            translation.translate(-Graphics.DRAW_PLAYER.getX(), -Graphics.DRAW_PLAYER.getY());
+
             if (Game.getMap() != null) {
-                Game.getMap().drawMap(c, Game.getPlayer().getShipExternal());
+                Game.getMap().drawMap(c, translation);
             }//if
 
         }//onDraw
@@ -53,7 +58,34 @@ public class Graphics {
     public final static DrawRunnable FOREGROUND_DRAW = new DrawRunnable() {
         @Override
         public void onDraw(Canvas c) {
-            drawBitmap(c, PLAYER_ID, Game.getPlayer().getShipInternal());
+
+            TransformationMatrix rotation = Game.getPlayer().getRotate().clone();
+
+            TransformationMatrix translation = Game.getPlayer().getTranslate().clone();
+            translation.translate(-Graphics.DRAW_PLAYER.getX(), -Graphics.DRAW_PLAYER.getY());
+
+            if (translation.getX() < 0) {
+                rotation.postTranslate(DRAW_PLAYER.getX() + translation.getX(), 0);
+            } else {
+                rotation.postTranslate(DRAW_PLAYER.getX(), 0);
+            }//else
+
+            if (translation.getY() < 0) {
+                rotation.postTranslate(0, DRAW_PLAYER.getY() + translation.getY());
+            } else {
+                rotation.postTranslate(0, DRAW_PLAYER.getY());
+            }//else
+
+            drawBitmap(c, PLAYER_ID, rotation);
+        }
+    };
+
+
+
+    public final static DrawRunnable MINIMAP_DRAW = new DrawRunnable() {
+        @Override
+        public void onDraw(Canvas c) {
+            Game.getMap().drawMiniMap(c, Game.getPlayer().getTranslate());
         }
     };
 
@@ -65,14 +97,20 @@ public class Graphics {
         OCEAN.setColor(Color.rgb(52, 154, 217));
         OCEAN.setStyle(Paint.Style.FILL);
 
-        TEMP.setColor(Color.rgb(127, 127, 127));
-        TEMP.setStyle(Paint.Style.FILL);
+        SMALL_MAP_BACKGROUND.setColor(Color.argb(127, 255, 255, 255));
+        SMALL_MAP_BACKGROUND.setStyle(Paint.Style.FILL);
+
+        SMALL_MAP_FOREGROUND.setColor(Color.argb(127, 0, 0, 0));
+        SMALL_MAP_FOREGROUND.setStyle(Paint.Style.FILL);
+
+        SMALL_MAP_PLAYER.setColor(Color.argb(127, 0, 0, 255));
+        SMALL_MAP_PLAYER.setStyle(Paint.Style.FILL);
+
+        DRAW_PLAYER = new TransformationMatrix();
+        DRAW_PLAYER.setDimensions(151, 88);
+        DRAW_PLAYER.translate(canvasWidth / 2 - DRAW_PLAYER.getW() / 2, canvasHeight / 2 - DRAW_PLAYER.getH() / 2);
 
         loadImages(res);
-
-        DRAW_PLAYER = new NewMatrix();
-        DRAW_PLAYER.translate(canvasWidth / 2 - 88 / 2, canvasHeight / 2 - 151 / 2);
-        Log.i("Hello", DRAW_PLAYER.getX() + ", " + DRAW_PLAYER.getY());
     }//initialize
 
     public static void loadImages(Resources res) {
@@ -80,7 +118,7 @@ public class Graphics {
 
         try {
 
-            images.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(res, R.drawable.ship_5), 88, 151, false));
+            images.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(res, R.drawable.ship_5), (int) DRAW_PLAYER.getW(), (int) DRAW_PLAYER.getH(), false));
 
             TILE_START_ID = images.size();
 
@@ -115,7 +153,7 @@ public class Graphics {
     }//drawBitmap
 
 
-    public static void drawBitmap(Canvas c, int id, NewMatrix transform) {
+    public static void drawBitmap(Canvas c, int id, TransformationMatrix transform) {
 
         if (id < images.size()) {
             float x = transform.getX();
