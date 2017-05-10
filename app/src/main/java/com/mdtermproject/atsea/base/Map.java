@@ -3,9 +3,8 @@ package com.mdtermproject.atsea.base;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.PointF;
-import android.util.Log;
+import android.graphics.RectF;
 
 import com.mdtermproject.atsea.graphics.Graphics;
 import com.mdtermproject.atsea.utils.TransformationMatrix;
@@ -24,7 +23,7 @@ public class Map {
     private Bitmap miniMapBitmap;
 
     private PointF spawn;
-    private PointF exit;
+    private RectF exit;
 
     public Map(int w, int h, byte[] raw) {
         this.w = w;
@@ -42,7 +41,7 @@ public class Map {
         this.spawn = spawn;
     }//setSpawn
 
-    public void setExit(PointF exit) {
+    public void setExit(RectF exit) {
         this.exit = exit;
     }//setSpawn
 
@@ -50,7 +49,7 @@ public class Map {
         return spawn;
     }
 
-    public PointF getExit() {
+    public RectF getExit() {
         return exit;
     }
 
@@ -84,7 +83,11 @@ public class Map {
 
         for (int x = xIdx; x < xIdx + screenWidthInTiles; x++) {
             for (int y = yIdx; y < yIdx + screenHeightInTiles; y++) {
-                int imgId = mapArray[x + y * w] - 1;
+                int imgId = -1;
+
+                if(x + y * w < mapArray.length) {
+                    imgId = mapArray[x + y * w] - 1;
+                }
 
                 if (imgId != -1) {
                     Graphics.drawBitmap(c, imgId + Graphics.TILE_START_ID, xTileOffset + (x - xIdx) * TILE_SIZE, yTileOffset + (y - yIdx) * TILE_SIZE);
@@ -143,5 +146,9 @@ public class Map {
         }//for
 
         return -1;
+    }
+
+    public boolean isOverExit(PointF p){
+        return exit.contains(p.x, p.y);
     }
 }

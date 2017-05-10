@@ -2,22 +2,23 @@ package com.mdtermproject.atsea.base;
 
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
-import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.RectF;
 import android.util.Base64;
 import android.util.Log;
 
 import com.mdtermproject.atsea.R;
 import com.mdtermproject.atsea.entities.Ship;
 import com.mdtermproject.atsea.graphics.CanvasView;
-
-import java.util.Arrays;
+import com.mdtermproject.atsea.graphics.Graphics;
 
 /**
  * Created by FIXIT on 2017-05-04.
  */
 
 public class Game {
+
+    private static String TAG = "Game.java";
 
     private static boolean REFRESH_MINIMAP = false;
     private static boolean REFRESH_FOREGROUND = false;
@@ -35,7 +36,7 @@ public class Game {
         fore = f;
         back = b;
 
-        map = parseTMXMap(res, R.xml.southmount_isles);
+        map = parseTMXMap(res, R.xml.bn);
 
         player = new Ship();
         player.setTranslate(map.getSpawn());
@@ -48,11 +49,12 @@ public class Game {
         Map result = null;
 
         PointF spawn = new PointF();
-        PointF exit = new PointF();
+        RectF exit = new RectF();
 
         int width = 0;
         int height = 0;
         boolean READ_STRING = false;
+        float tileRatio = Graphics.TILE_SIZE / 64f;
 
         try {
             int event = xml.getEventType();
@@ -65,10 +67,15 @@ public class Game {
                         width = xml.getAttributeIntValue(null, "width", 0);
                         height = xml.getAttributeIntValue(null, "height", 0);
                     } else if (xml.getName().equals("object")) {
+                        Log.i(TAG, "parseTMXMap: ");
                         if (xml.getAttributeValue(null, "type").equals("spawn")) {
-                            spawn = new PointF(xml.getAttributeFloatValue(null, "x", 0), xml.getAttributeFloatValue(null, "y", 0));
+                            spawn = new PointF(xml.getAttributeIntValue(null, "x", 0) * tileRatio, xml.getAttributeIntValue(null, "y", 0) * tileRatio);
                         } else if (xml.getAttributeValue(null, "type").equals("exit")) {
-                            exit = new PointF(xml.getAttributeFloatValue(null, "x", 0), xml.getAttributeFloatValue(null, "y", 0));
+                            int x = xml.getAttributeIntValue(null, "x", 0);
+                            int y = xml.getAttributeIntValue(null, "y", 0);
+                            int eWidth = xml.getAttributeIntValue(null, "width", 0);
+                            int eHeight = xml.getAttributeIntValue(null, "height", 0);
+                            exit = new RectF(x * tileRatio, y * tileRatio, (x + eWidth) * tileRatio, (y + eHeight) * tileRatio);
                         }//else
                     }//elseif
                 } else if (READ_STRING) {
@@ -85,6 +92,7 @@ public class Game {
         }//catch
 
         result.setSpawn(spawn);
+        Log.i(TAG, "parseTMXMap: " + exit);
         result.setExit(exit);
 
         return result;
@@ -99,6 +107,10 @@ public class Game {
                 while (true) {
 
                     player.update((int) (System.currentTimeMillis() - timer));
+
+                    if(map.isOverExit(player.getCentre())){
+                        Log.i("Game", "Over");
+                    }
                     timer = System.currentTimeMillis();
 
                     try {

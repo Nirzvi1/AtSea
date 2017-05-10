@@ -34,7 +34,7 @@ public class Ship {
 
         this.imgId = Graphics.PLAYER_ID;
 
-        shipStats = new ShipBuild(0.1f, 0.06f, 0.5f, 0, 0);
+        shipStats = new ShipBuild(0.1f, 0.1f, 1f, 0, 0);
 
     }//Ship
 
@@ -147,6 +147,12 @@ public class Ship {
         corners[3][1] = centreY + (-halfW)*Math.sin(rad) + (halfH)*Math.cos(rad);
 
         return corners;
+    }
+
+    public PointF getCentre(){
+        float centreX = translate.getX() + translate.getW() / 2;
+        float centreY = translate.getY() + translate.getH() / 2;
+        return new PointF(centreX, centreY);
     }
 
 }
