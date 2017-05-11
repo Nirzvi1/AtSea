@@ -2,16 +2,13 @@ package com.mdtermproject.atsea.base;
 
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
-import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.Base64;
-import android.util.Log;
 
 import com.mdtermproject.atsea.R;
 import com.mdtermproject.atsea.entities.Ship;
 import com.mdtermproject.atsea.graphics.CanvasView;
-
-import java.util.Arrays;
+import com.mdtermproject.atsea.graphics.Graphics;
 
 /**
  * Created by FIXIT on 2017-05-04.
@@ -19,28 +16,46 @@ import java.util.Arrays;
 
 public class Game {
 
-    private static boolean REFRESH_MINIMAP = false;
+    private static boolean initialized = false;
+    private static boolean started = false;
+
+    private static boolean REFRESH_GUI_LAYER = false;
+    private static int REFRESH_GUI_STATE = -2;
+
     private static boolean REFRESH_FOREGROUND = false;
     private static boolean REFRESH_BACKGROUND = false;
 
     private static Map map;
     private static Ship player;
 
-    private static CanvasView miniMap;
+    private static CanvasView guiLayer;
     private static CanvasView fore;
     private static CanvasView back;
 
-    public static void init(CanvasView m, CanvasView f, CanvasView b, Resources res) {
-        miniMap = m;
+    public static void init(CanvasView g, CanvasView f, CanvasView b, Resources res) {
+
+        guiLayer = g;
         fore = f;
         back = b;
 
-        map = parseTMXMap(res, R.xml.southmount_isles);
+        if (!initialized) {
+            map = parseTMXMap(res, R.xml.southmount_isles);
 
-        player = new Ship();
-        player.setTranslate(map.getSpawn());
+            player = new Ship();
+            player.setTranslate(Graphics.DRAW_PLAYER.getX(), Graphics.DRAW_PLAYER.getY());
+        }//if
 
-        miniMap.refresh();
+        guiLayer.refresh();
+
+        initialized = true;
+    }
+
+    public static boolean isInitialized() {
+        return initialized;
+    }
+
+    public static boolean isStarted() {
+        return started;
     }
 
     public static Map parseTMXMap(Resources res, int mapId) {
@@ -91,6 +106,8 @@ public class Game {
     }//parseMap
 
     public static void start() {
+        started = true;
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -117,9 +134,9 @@ public class Game {
                         REFRESH_BACKGROUND = false;
                     }//if
 
-                    if (REFRESH_MINIMAP) {
-                        miniMap.refresh();
-                        REFRESH_MINIMAP = false;
+                    if (REFRESH_GUI_LAYER) {
+                        guiLayer.refresh();
+                        REFRESH_GUI_LAYER = false;
                     }//if
                 }//while
 
@@ -143,8 +160,18 @@ public class Game {
         REFRESH_BACKGROUND = true;
     }
 
-    public static void refreshMiniMap() {
-        REFRESH_MINIMAP = true;
+    public static void refreshGUI() {
+        REFRESH_GUI_LAYER = true;
+        REFRESH_GUI_STATE = -2;
+    }
+
+    public static void refreshGUI(int layoutId) {
+        REFRESH_GUI_LAYER = true;
+        REFRESH_GUI_STATE = layoutId;
+    }
+
+    public static int getGuiRefreshState() {
+        return REFRESH_GUI_STATE;
     }
 
 }

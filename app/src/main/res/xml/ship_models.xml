@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+    Acceptable Ranges:
+    Accel: 0.1
+    Max Vel: 0.03 - 0.1
+    AngleVel: 0.05 - 1
+
+    numCannons: ?
+    storage: ?
+    -->
+
+
+    <ShipBuild name="Raft" type="Raft" accel="0.1" maxVel="0.03" angleVel="0.05" numCannons="0" storage="0" />
+    <ShipBuild name="Dinghy" type="Dinghy" accel="0.1" maxVel="0.05" angleVel="0.05" numCannons="0" storage="0" />
+    <ShipBuild name="Rowboat" type="Rowboat" accel="0.1" maxVel="0.05" angleVel="0.08" numCannons="0" storage="0" />
+    <ShipBuild name="Sloop" type="Sloop" accel="0.1" maxVel="0.08" angleVel="0.05" numCannons="0" storage="0" />
+    <ShipBuild name="Small Sailboat" type="Sailboat" accel="0.1" maxVel="0.08" angleVel="0.05" numCannons="0" storage="0" />
+    <ShipBuild name="Sailboat" type="Sailboat" accel="0.1" maxVel="0.08" angleVel="0.05" numCannons="0" storage="0" />
+
+    <ShipBuild name="Quick Sailboat" type="Sailboat" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="Pinwheel Sailboat" type="Sailboat" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="Soldier's Ship" type="Corvette" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+
+    <ShipBuild name="Merchant Ship" type="Caravel" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="The Stream" type="Caravel" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="The Breeze" type="Corvette" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+
+    <ShipBuild name="The Blaze" type="Carrack" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="The Grand" type="Carrack" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="The Luxor" type="Corvette" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+
+    <ShipBuild name="The Adventure" type="Barque" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="The Defiance" type="Barque" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="The Fierce" type="Brigantine" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+
+    <ShipBuild name="The Miracle" type="Brigantine" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="The Castle" type="Barquentine" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="The Mountain" type="Brigantine" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+
+    <!--Ships below this line still need types-->
+
+    <ShipBuild name="The Swallow" type="Barque" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="The Goose" type="Barque" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="The Swan" type="Brigantine" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+
+    <ShipBuild name="The Melody" type="Barque" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="The Patriot" type="Barque" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="The Zephyr" type="Brigantine" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+
+    <ShipBuild name="The Bronze" type="Barque" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="The Iron" type="Barque" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="The Rose" type="Brigantine" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+
+    <ShipBuild name="The Chimera" type="Barque" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="The Gryffyn" type="Barque" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="The Sphynx" type="Brigantine" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+    <ShipBuild name="The Dragon" type="Brigantine" accel="0.1" maxVel="0.12" angleVel="0.06" numCannons="0" storage="0" />
+
+</resources>

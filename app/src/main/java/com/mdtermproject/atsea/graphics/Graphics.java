@@ -1,14 +1,21 @@
 package com.mdtermproject.atsea.graphics;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.text.Layout;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.widget.AbsoluteLayout;
+import android.widget.RelativeLayout;
 
 import com.mdtermproject.atsea.base.Game;
 import com.mdtermproject.atsea.R;
+import com.mdtermproject.atsea.base.MainActivity;
 import com.mdtermproject.atsea.utils.TransformationMatrix;
 
 import java.util.ArrayList;
@@ -85,7 +92,12 @@ public class Graphics {
     public final static DrawRunnable MINIMAP_DRAW = new DrawRunnable() {
         @Override
         public void onDraw(Canvas c) {
-            Game.getMap().drawMiniMap(c, Game.getPlayer().getTranslate());
+
+            if (Game.getGuiRefreshState() == -2) {
+                Game.getMap().drawMiniMap(c, Game.getPlayer().getTranslate());
+            } else if (Game.getGuiRefreshState() != -1) {
+                drawLayout(c, MainActivity.getContext(), Game.getGuiRefreshState());
+            }//else
         }
     };
 
@@ -165,7 +177,15 @@ public class Graphics {
                 c.drawBitmap(images.get(id), transform, new Paint());
             }//if
         }//if
-    }//void
+    }//drawBitmap
+
+    public static void drawLayout(Canvas c, Context ctx, int layoutId) {
+        AbsoluteLayout gui = (AbsoluteLayout) LayoutInflater.from(ctx).inflate(layoutId, null);
+        gui.measure(c.getWidth(), c.getHeight());
+        gui.layout(0, 0, c.getWidth(), c.getHeight());
+
+        gui.draw(c);
+    }//drawLayout
 
 
 }

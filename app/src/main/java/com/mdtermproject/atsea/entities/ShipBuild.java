@@ -13,12 +13,30 @@ public class ShipBuild {
     private float numCannons;
     private float storage;
 
-    public ShipBuild(float accel, float maxVel, float angleVel, float numCannons, float storage) {
+    private String modelName;
+
+    public enum Model {
+        RAFT,
+        DINGHY,
+        ROWBOAT,
+        SLOOP,
+        SAILBOAT,
+        CORVETTE,
+        CARAVEL,
+        CARRACK,
+        BARQUE,
+        BRIGANTINE,
+        BARQUENTINE,
+        ARGOSY
+    }
+
+    public ShipBuild(float accel, float maxVel, float angleVel, float numCannons, float storage, String modelName) {
         this.accel = accel;
         this.maxVel = maxVel;
         this.angleVel = angleVel;
         this.numCannons = numCannons;
         this.storage = storage;
+        this.modelName = this.modelName;
     }//ShipBuild
 
     public void setTo(ShipBuild copy) {
@@ -67,6 +85,14 @@ public class ShipBuild {
 
     public void setStorage(float storage) {
         this.storage = storage;
+    }
+
+    public String getModelName() {
+        return modelName;
+    }
+
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
     }
 
 }

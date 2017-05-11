@@ -1,6 +1,7 @@
 package com.mdtermproject.atsea.entities;
 
 import android.graphics.PointF;
+import android.util.Log;
 
 import com.mdtermproject.atsea.base.Game;
 import com.mdtermproject.atsea.graphics.Graphics;
@@ -34,7 +35,7 @@ public class Ship {
 
         this.imgId = Graphics.PLAYER_ID;
 
-        shipStats = new ShipBuild(0.1f, 0.06f, 0.5f, 0, 0);
+        shipStats = new ShipBuild(0.1f, 0.06f, 0.5f, 0, 0, "Brigantine");
 
     }//Ship
 
@@ -88,21 +89,41 @@ public class Ship {
         translate.translate(dx, dy);
     }//translate
 
+    public void setTranslate(float x, float y) {
+        translate.setTranslate(x, y);
+    }
+
     public void setTranslate(PointF move) {
         translate.setTranslate(move.x, move.y);
+    }
+
+    public void attemptRotate(float turn) {
+        rotate.rotate(turn);
+
+        if (Game.getMap().doesCollide(getCorners()) != -1) {
+            rotate.rotate(-turn);
+        }//if
+    }
+
+    public void attemptTranslate(float dx, float dy) {
+        translate.translate(dx, dy);
+
+        if (Game.getMap().doesCollide(getCorners()) != -1) {
+            translate.translate(-dx, -dy);
+        }//if
     }
 
     public void update(int latency) {
 
         this.v = dampenAccel(this.targetV);
 
-        if (Math.round(100 * v) > -1) {
+        if (Math.round(100 * v) > 0) {
 
             float turn = dampenAngularVelocity(filterAngle(360 - targetAngle) - rotate.getAngle());
 
-            rotate.rotate(turn);
-            Game.refreshForeground();
+            attemptRotate(turn);
 
+            Log.i("Latency", v + "");
             float dx = (float) (v * Math.cos(Math.toRadians(rotate.getAngle())) * latency);
             float dy = (float) (v * Math.sin(Math.toRadians(rotate.getAngle())) * latency);
 
@@ -110,13 +131,12 @@ public class Ship {
                 Game.refreshForeground();
             }//if
 
-            translate.postTranslate(dx, dy);
+            attemptTranslate(dx, 0);
+            attemptTranslate(0, dy);
 
-            if (Game.getMap().doesCollide(getCorners()) != -1) {
-                translate.postTranslate(-dx, -dy);
-            } else if (Math.hypot(dx, dy) > 0.01) {
+            if (Math.hypot(dx, dy) > 0.01) {
                 Game.refreshBackground();
-                Game.refreshMiniMap();
+                Game.refreshGUI(); //update mini map
             }//if
 
         }//if

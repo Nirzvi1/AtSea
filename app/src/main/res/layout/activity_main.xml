@@ -37,10 +37,12 @@
         android:layout_marginLeft="10dp" />
 
     <com.mdtermproject.atsea.graphics.CanvasView
-        android:id="@+id/minimap"
+        android:id="@+id/guiLayer"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_height="150dp"
-        android:layout_width="150dp" />
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>
