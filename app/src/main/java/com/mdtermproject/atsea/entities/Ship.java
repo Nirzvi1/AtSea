@@ -169,4 +169,10 @@ public class Ship {
         return corners;
     }
 
+    public PointF getCentre(){
+        float centreX = translate.getX() + translate.getW() / 2;
+        float centreY = translate.getY() + translate.getH() / 2;
+        return new PointF(centreX, centreY);
+    }
+
 }
