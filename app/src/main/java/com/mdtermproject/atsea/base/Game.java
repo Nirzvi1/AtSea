@@ -9,8 +9,11 @@ import android.util.Log;
 
 import com.mdtermproject.atsea.R;
 import com.mdtermproject.atsea.entities.Ship;
+import com.mdtermproject.atsea.entities.ShipBuild;
 import com.mdtermproject.atsea.graphics.CanvasView;
 import com.mdtermproject.atsea.graphics.Graphics;
+
+import java.util.ArrayList;
 
 /**
  * Created by FIXIT on 2017-05-04.
@@ -30,6 +33,7 @@ public class Game {
 
     private static Map map;
     private static Ship player;
+    private static ArrayList<Ship> enemies;
 
     private static CanvasView guiLayer;
     private static CanvasView fore;
@@ -46,6 +50,13 @@ public class Game {
 
             player = new Ship();
             player.setTranslate(Graphics.DRAW_PLAYER.getX(), Graphics.DRAW_PLAYER.getY());
+
+            enemies = new ArrayList<>();
+            enemies.add(new Ship());
+            enemies.get(0).setShipBuild(new ShipBuild(0.1f, 0.5f, 0.5f, 0, 0, "sfd"));
+            enemies.get(0).translate(10, 10);
+
+
         }//if
 
         guiLayer.refresh();
@@ -131,6 +142,14 @@ public class Game {
 
                     player.update((int) (System.currentTimeMillis() - timer));
 
+                    for (Ship enemy : enemies) {
+                        float angle = (float) ((enemy.getRotate().getAngle() + Math.random() * 90 - 45) % 360 + 360) % 360;
+
+                        enemy.setTargetMotion(100, angle);
+
+                        enemy.update((int) (System.currentTimeMillis() - timer));
+                    }//for
+
                     if(map.isOverExit(player.getCentre())){
                         Log.i("Game", "Over");
                     }
@@ -168,6 +187,10 @@ public class Game {
 
     public static Ship getPlayer() {
         return player;
+    }
+
+    public static ArrayList<Ship> getEnemies() {
+        return enemies;
     }
 
     public static void refreshForeground() {

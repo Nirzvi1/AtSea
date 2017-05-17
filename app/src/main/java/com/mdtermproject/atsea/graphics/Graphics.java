@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import android.widget.RelativeLayout;
 import com.mdtermproject.atsea.base.Game;
 import com.mdtermproject.atsea.R;
 import com.mdtermproject.atsea.base.MainActivity;
+import com.mdtermproject.atsea.entities.Ship;
 import com.mdtermproject.atsea.utils.TransformationMatrix;
 
 import java.util.ArrayList;
@@ -71,19 +73,30 @@ public class Graphics {
             TransformationMatrix translation = Game.getPlayer().getTranslate().clone();
             translation.translate(-Graphics.DRAW_PLAYER.getX(), -Graphics.DRAW_PLAYER.getY());
 
+            TransformationMatrix transForEnemy = Game.getPlayer().getTranslate().clone();
+
             if (translation.getX() < 0) {
                 rotation.postTranslate(DRAW_PLAYER.getX() + translation.getX(), 0);
+                transForEnemy.setTranslate(DRAW_PLAYER.getX(), transForEnemy.getY());
             } else {
                 rotation.postTranslate(DRAW_PLAYER.getX(), 0);
             }//else
 
             if (translation.getY() < 0) {
                 rotation.postTranslate(0, DRAW_PLAYER.getY() + translation.getY());
+                transForEnemy.setTranslate(transForEnemy.getX(), DRAW_PLAYER.getY());
             } else {
                 rotation.postTranslate(0, DRAW_PLAYER.getY());
             }//else
 
             drawBitmap(c, PLAYER_ID, rotation);
+
+            for (Ship enemy : Game.getEnemies()) {
+
+                TransformationMatrix draw = enemy.getTranslate().subtract(transForEnemy);
+
+                drawBitmap(c, PLAYER_ID, draw);
+            }//for
         }
     };
 

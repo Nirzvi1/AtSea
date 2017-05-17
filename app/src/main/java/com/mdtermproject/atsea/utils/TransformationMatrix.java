@@ -65,6 +65,58 @@ public class TransformationMatrix extends Matrix {
         return result;
     }
 
+    public TransformationMatrix getTranslation() {
+        float[] values = getValues();
+
+        TransformationMatrix result = new TransformationMatrix();
+        result.setDimensions(getW(), getH());
+
+        values[0] = 0;
+        values[1] = 0;
+        values[3] = 0;
+        values[4] = 0;
+        values[6] = 0;
+        values[7] = 0;
+
+        result.setValues(values);
+
+        return result;
+    }
+
+    public TransformationMatrix getRotation() {
+        float[] values = getValues();
+
+        TransformationMatrix result = new TransformationMatrix();
+        result.setDimensions(getW(), getH());
+
+        values[2] = 0;
+        values[5] = 0;
+        values[8] = 1;
+
+        result.setValues(values);
+
+        return result;
+    }
+
+    public TransformationMatrix subtract(TransformationMatrix other) {
+        float angle = getAngle() - other.getAngle();
+        float x = getX() - other.getX();
+        float y = getY() - other.getY();
+
+        TransformationMatrix result = new TransformationMatrix();
+        result.rotate(angle);
+        result.translate(x, y);
+
+        return result;
+    }
+
+    public float[] getValues() {
+        float[] values = new float[9];
+        getValues(values);
+
+        return values;
+    }
+
     public String toString() {
         return "Angle: " + getAngle() + ", X: " + getX() + ", Y: " + getY();
     }

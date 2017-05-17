@@ -35,9 +35,16 @@ public class Ship {
 
         this.imgId = Graphics.PLAYER_ID;
 
-        shipStats = new ShipBuild(0.1f, 0.06f, 0.5f, 0, 0, "Brigantine");
-
+        shipStats = new ShipBuild(0.1f, 0.5f, 0.5f, 0, 0, "Brigantine");
     }//Ship
+
+    public void setShipBuild(ShipBuild newShip) {
+        this.shipStats = newShip;
+    }
+
+    public ShipBuild getShipBuild() {
+        return shipStats;
+    }
 
     public void setTargetMotion(float v, float angle) {
 
@@ -140,7 +147,6 @@ public class Ship {
             }//if
 
         }//if
-
 
     }//update
 
