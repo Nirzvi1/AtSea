@@ -13,17 +13,17 @@ import com.mdtermproject.atsea.utils.TransformationMatrix;
 
 public class Ship {
 
-    private int imgId = 0;
+    protected int imgId = 0;
 
     private volatile float targetV = 0;
     private volatile float v = 0;
 
     private volatile float targetAngle = 0;
 
-    private TransformationMatrix rotate;
-    private TransformationMatrix translate;
+    protected TransformationMatrix rotate;
+    protected TransformationMatrix translate;
 
-    private ShipBuild shipStats;
+    protected ShipBuild shipStats;
 
     public Ship() {
 
@@ -33,10 +33,10 @@ public class Ship {
         translate = new TransformationMatrix();
         translate.setDimensions(Graphics.DRAW_PLAYER.getW(), Graphics.DRAW_PLAYER.getH());
 
-        this.imgId = Graphics.PLAYER_ID;
 
         shipStats = new ShipBuild(0.1f, 0.5f, 0.5f, 0, 0, "Brigantine");
     }//Ship
+
 
     public void setShipBuild(ShipBuild newShip) {
         this.shipStats = newShip;
@@ -96,6 +96,10 @@ public class Ship {
         translate.translate(dx, dy);
     }//translate
 
+    public void translate(PointF p){
+        translate(p.x, p.y);
+    }
+
     public void setTranslate(float x, float y) {
         translate.setTranslate(x, y);
     }
@@ -107,8 +111,11 @@ public class Ship {
     public void attemptRotate(float turn) {
         rotate.rotate(turn);
 
-        if (Game.getMap().doesCollide(getCorners()) != -1) {
-            rotate.rotate(-turn);
+        int collide = Game.getMap().doesCollide(getCorners());
+
+        if (collide != -1) {
+            rotate.rotate(-3 * turn / 5);
+
         }//if
     }
 

@@ -8,12 +8,15 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.mdtermproject.atsea.R;
+import com.mdtermproject.atsea.entities.EnemyShip;
+import com.mdtermproject.atsea.entities.PlayerShip;
 import com.mdtermproject.atsea.entities.Ship;
 import com.mdtermproject.atsea.entities.ShipBuild;
 import com.mdtermproject.atsea.graphics.CanvasView;
 import com.mdtermproject.atsea.graphics.Graphics;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by FIXIT on 2017-05-04.
@@ -39,27 +42,32 @@ public class Game {
     private static CanvasView fore;
     private static CanvasView back;
 
+    private static Thread game;
+
     public static void init(CanvasView g, CanvasView f, CanvasView b, Resources res) {
 
         guiLayer = g;
         fore = f;
         back = b;
+        started = false;
 
         if (!initialized) {
             map = parseTMXMap(res, R.xml.silverspell_lake);
 
-            player = new Ship();
-            player.setTranslate(map.getSpawn().x, map.getSpawn().y);
+            player = new PlayerShip();
+            player.rotate(90);
 
             Log.i("Spawn", map.getSpawn().toString());
 
             enemies = new ArrayList<>();
-            enemies.add(new Ship());
+            enemies.add(new EnemyShip());
             enemies.get(0).setShipBuild(new ShipBuild(0.1f, 0.5f, 0.5f, 0, 0, "sfd"));
-            enemies.get(0).translate(10, 10);
+            enemies.get(0).rotate(90);
 
+            Log.i("Rotate1", enemies.get(0).getRotate().toString());
 
         }//if
+
 
         guiLayer.refresh();
 
@@ -135,22 +143,24 @@ public class Game {
     public static void start() {
         started = true;
 
-        new Thread(new Runnable() {
+        game = new Thread(new Runnable() {
             @Override
             public void run() {
 
                 long timer = System.currentTimeMillis();
-                while (true) {
+                while (started) {
 
                     player.update((int) (System.currentTimeMillis() - timer));
 
-//                    for (Ship enemy : enemies) {
-//                        float angle = (float) ((enemy.getRotate().getAngle() + Math.random() * 90 - 45) % 360 + 360) % 360;
-//
-//                        enemy.setTargetMotion(100, angle);
-//
-//                        enemy.update((int) (System.currentTimeMillis() - timer));
-//                    }//for
+                    for (Ship enemy : enemies) {
+                        float deltaY = enemy.getCentre().y - player.getCentre().y;
+                        float deltaX = enemy.getCentre().x - player.getCentre().x;
+                        float angle = (float) -Math.toDegrees(Math.atan2(-deltaY, -deltaX));
+
+                        enemy.setTargetMotion(50, angle);
+
+                        enemy.update((int) (System.currentTimeMillis() - timer));
+                    }//for
 
                     if(map.isOverExit(player.getCentre())){
                         Log.i("Game", "Over");
@@ -180,7 +190,13 @@ public class Game {
                 }//while
 
             }
-        }).start();
+        });
+        game.start();
+    }
+
+    public static void stop(){
+        started = false;
+        game.interrupt();
     }
 
     public static Map getMap() {
@@ -216,5 +232,10 @@ public class Game {
     public static int getGuiRefreshState() {
         return REFRESH_GUI_STATE;
     }
+
+    public static List<Ship> getEnemyShips(){
+        return enemies;
+    }
+
 
 }

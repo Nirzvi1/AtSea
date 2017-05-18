@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.widget.AbsoluteLayout;
 
 import com.mdtermproject.atsea.R;
 import com.mdtermproject.atsea.graphics.CanvasView;
@@ -60,6 +57,12 @@ public class MainActivity extends Activity {
             Game.start();
         }//if
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Game.stop();
     }
 
     public static Context getContext() {

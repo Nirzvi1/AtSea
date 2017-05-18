@@ -7,15 +7,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PointF;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.widget.AbsoluteLayout;
 import android.widget.RelativeLayout;
 
-import com.mdtermproject.atsea.base.Game;
 import com.mdtermproject.atsea.R;
+import com.mdtermproject.atsea.base.Game;
 import com.mdtermproject.atsea.base.MainActivity;
 import com.mdtermproject.atsea.entities.Ship;
 import com.mdtermproject.atsea.utils.TransformationMatrix;
@@ -38,6 +35,7 @@ public class Graphics {
 
     private static ArrayList<Bitmap> images;
     public final static int PLAYER_ID = 0;
+    public final static int ENEMY_ID = 0;
     public static int TILE_START_ID;
 
     public final static int TILE_SIZE = 100;
@@ -69,22 +67,23 @@ public class Graphics {
         public void onDraw(Canvas c) {
 
             TransformationMatrix rotation = Game.getPlayer().getRotate().clone();
-
             TransformationMatrix translation = Game.getPlayer().getTranslate().clone();
-            translation.translate(-Graphics.DRAW_PLAYER.getX(), -Graphics.DRAW_PLAYER.getY());
+            TransformationMatrix transForEnemy = translation.clone();
 
-            TransformationMatrix transForEnemy = Game.getPlayer().getTranslate().clone();
+            translation.translate(-Graphics.DRAW_PLAYER.getX(), -Graphics.DRAW_PLAYER.getY());
+            transForEnemy.translate(-Graphics.DRAW_PLAYER.getX(), -Graphics.DRAW_PLAYER.getY());
 
             if (translation.getX() < 0) {
                 rotation.postTranslate(DRAW_PLAYER.getX() + translation.getX(), 0);
-                transForEnemy.setTranslate(DRAW_PLAYER.getX(), transForEnemy.getY());
+                transForEnemy.translate(-translation.getX(), 0);
+
             } else {
                 rotation.postTranslate(DRAW_PLAYER.getX(), 0);
             }//else
 
             if (translation.getY() < 0) {
                 rotation.postTranslate(0, DRAW_PLAYER.getY() + translation.getY());
-                transForEnemy.setTranslate(transForEnemy.getX(), DRAW_PLAYER.getY());
+                transForEnemy.translate(0, -translation.getY());
             } else {
                 rotation.postTranslate(0, DRAW_PLAYER.getY());
             }//else
@@ -95,7 +94,12 @@ public class Graphics {
 
                 TransformationMatrix draw = enemy.getTranslate().subtract(transForEnemy);
 
-                drawBitmap(c, PLAYER_ID, draw);
+                TransformationMatrix rotate = enemy.getRotate().clone();
+                rotate.translate(draw.getX(), draw.getY());
+
+                Log.i("Roate", rotate.toString());
+
+                drawBitmap(c, ENEMY_ID, rotate);
             }//for
         }
     };

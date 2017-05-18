@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AtSea.iml" filepath="$PROJECT_DIR$/AtSea.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CalligraphySample/CalligraphySample.iml" filepath="$PROJECT_DIR$/CalligraphySample/CalligraphySample.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/calligraphy/calligraphy.iml" filepath="$PROJECT_DIR$/calligraphy/calligraphy.iml" />
     </modules>
   </component>
 </project>

@@ -22,10 +22,12 @@ public class CanvasView extends View {
         this.d = draw;
     }
 
+
     public void onDraw(Canvas c) {
         if (d != null) {
             d.onDraw(c);
         }//if
+
 
         drawCompleted = true;
     }

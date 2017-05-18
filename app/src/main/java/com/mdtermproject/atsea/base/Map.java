@@ -6,6 +6,7 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
 
+import com.mdtermproject.atsea.entities.Ship;
 import com.mdtermproject.atsea.graphics.Graphics;
 import com.mdtermproject.atsea.utils.TransformationMatrix;
 
@@ -128,6 +129,13 @@ public class Map {
         float y = translate.getY() * (miniMapBitmap.getHeight() / (float) (h * Graphics.TILE_SIZE)) + (c.getHeight() - miniMapBitmap.getHeight());
 
         c.drawRect(x, y, x + 5, y + 5, Graphics.SMALL_MAP_PLAYER);
+
+        for (Ship s : Game.getEnemyShips()) {
+            float xE = s.getTranslate().getX() * (miniMapBitmap.getWidth() / (float) (w * Graphics.TILE_SIZE)) + (c.getWidth() - miniMapBitmap.getWidth());
+            float yE = s.getTranslate().getY() * (miniMapBitmap.getHeight() / (float) (h * Graphics.TILE_SIZE)) + (c.getHeight() - miniMapBitmap.getHeight());
+
+            c.drawRect(xE, yE, xE + 5, yE + 5, Graphics.SMALL_MAP_PLAYER);
+        }
 
     }
 
