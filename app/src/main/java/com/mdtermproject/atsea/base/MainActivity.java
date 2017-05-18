@@ -24,8 +24,6 @@ public class MainActivity extends Activity {
 
     public static String FILE_SAVE = "";
 
-    public static AbsoluteLayout test;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,8 +40,6 @@ public class MainActivity extends Activity {
 
             guiLayer = (CanvasView) findViewById(R.id.guiLayer);
             guiLayer.setDrawRunnable(Graphics.MINIMAP_DRAW);
-
-            test = (AbsoluteLayout) LayoutInflater.from(this).inflate(R.layout.firstgui, null);
 
             Point windowSize = new Point();
             getWindowManager().getDefaultDisplay().getSize(windowSize);

@@ -46,10 +46,12 @@ public class Game {
         back = b;
 
         if (!initialized) {
-            map = parseTMXMap(res, R.xml.southmount_isles);
+            map = parseTMXMap(res, R.xml.silverspell_lake);
 
             player = new Ship();
-            player.setTranslate(Graphics.DRAW_PLAYER.getX(), Graphics.DRAW_PLAYER.getY());
+            player.setTranslate(map.getSpawn().x, map.getSpawn().y);
+
+            Log.i("Spawn", map.getSpawn().toString());
 
             enemies = new ArrayList<>();
             enemies.add(new Ship());
@@ -96,10 +98,10 @@ public class Game {
                         height = xml.getAttributeIntValue(null, "height", 0);
                     } else if (xml.getName().equals("object")) {
                         Log.i(TAG, "parseTMXMap: ");
-                        if (xml.getAttributeValue(null, "type").equals("spawn")) {
+                        if (xml.getAttributeValue(null, "name").equals("spawn")) {
                             spawn = new PointF(xml.getAttributeIntValue(null, "x", 0) * tileRatio, xml.getAttributeIntValue(null, "y", 0) * tileRatio);
 
-                        } else if (xml.getAttributeValue(null, "type").equals("exit")) {
+                        } else if (xml.getAttributeValue(null, "name").equals("exit")) {
 
                             int x = xml.getAttributeIntValue(null, "x", 0);
                             int y = xml.getAttributeIntValue(null, "y", 0);
@@ -142,13 +144,13 @@ public class Game {
 
                     player.update((int) (System.currentTimeMillis() - timer));
 
-                    for (Ship enemy : enemies) {
-                        float angle = (float) ((enemy.getRotate().getAngle() + Math.random() * 90 - 45) % 360 + 360) % 360;
-
-                        enemy.setTargetMotion(100, angle);
-
-                        enemy.update((int) (System.currentTimeMillis() - timer));
-                    }//for
+//                    for (Ship enemy : enemies) {
+//                        float angle = (float) ((enemy.getRotate().getAngle() + Math.random() * 90 - 45) % 360 + 360) % 360;
+//
+//                        enemy.setTargetMotion(100, angle);
+//
+//                        enemy.update((int) (System.currentTimeMillis() - timer));
+//                    }//for
 
                     if(map.isOverExit(player.getCentre())){
                         Log.i("Game", "Over");

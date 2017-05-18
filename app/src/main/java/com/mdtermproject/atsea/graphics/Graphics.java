@@ -147,14 +147,8 @@ public class Graphics {
 
             TILE_START_ID = images.size();
 
-            for (int i = 1; i <= 96; i++) {
-                int drawableId;
-
-                if (i < 10) {
-                    drawableId = R.drawable.class.getField("tile_0" + i).getInt(null);
-                } else {
-                    drawableId = R.drawable.class.getField("tile_" + i).getInt(null);
-                }//else
+            for (int i = 1; i <= 99; i++) {
+                int drawableId = R.drawable.class.getField("tile_" + i).getInt(null);
 
                 images.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(res, drawableId), TILE_SIZE, TILE_SIZE, false));
             }//for
@@ -193,7 +187,11 @@ public class Graphics {
     }//drawBitmap
 
     public static void drawLayout(Canvas c, Context ctx, int layoutId) {
-        AbsoluteLayout gui = (AbsoluteLayout) LayoutInflater.from(ctx).inflate(layoutId, null);
+        RelativeLayout gui = (RelativeLayout) LayoutInflater.from(ctx).inflate(layoutId, null);
+
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(c.getWidth(), c.getHeight());
+        gui.setLayoutParams(lp);
+
         gui.measure(c.getWidth(), c.getHeight());
         gui.layout(0, 0, c.getWidth(), c.getHeight());
 
