@@ -138,6 +138,13 @@ public class Map {
 
         c.drawRect(x, y, x + 5, y + 5, Graphics.SMALL_MAP_PLAYER);
 
+        for (Ship s : Game.getEnemyShips()) {
+            float xE = s.getTranslate().getX() * (miniMapBitmap.getWidth() / (float) (w * Graphics.TILE_SIZE)) + (c.getWidth() - miniMapBitmap.getWidth());
+            float yE = s.getTranslate().getY() * (miniMapBitmap.getHeight() / (float) (h * Graphics.TILE_SIZE)) + (c.getHeight() - miniMapBitmap.getHeight());
+
+            c.drawRect(xE, yE, xE + 5, yE + 5, Graphics.SMALL_MAP_PLAYER);
+        }
+
     }
 
     public boolean collide(Ship entity) {

@@ -99,12 +99,11 @@ public class TransformationMatrix extends Matrix {
     }
 
     public TransformationMatrix subtract(TransformationMatrix other) {
-        float angle = getAngle() - other.getAngle();
         float x = getX() - other.getX();
         float y = getY() - other.getY();
 
         TransformationMatrix result = new TransformationMatrix();
-        result.rotate(angle);
+        result.rotate(getAngle());
         result.translate(x, y);
 
         return result;
