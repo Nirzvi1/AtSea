@@ -14,6 +14,7 @@ import com.mdtermproject.atsea.graphics.CanvasView;
 import com.mdtermproject.atsea.graphics.Graphics;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by FIXIT on 2017-05-04.
@@ -50,6 +51,7 @@ public class Game {
 
             player = new Ship();
             player.setTranslate(map.getSpawn().x, map.getSpawn().y);
+            player.rotate(90);
 
             Log.i("Spawn", map.getSpawn().toString());
 
@@ -80,6 +82,8 @@ public class Game {
 
         PointF spawn = new PointF();
         RectF exit = new RectF();
+        HashMap<String, RectF> regions = new HashMap<>();
+
 
         int width = 0;
         int height = 0;
@@ -97,11 +101,12 @@ public class Game {
                         width = xml.getAttributeIntValue(null, "width", 0);
                         height = xml.getAttributeIntValue(null, "height", 0);
                     } else if (xml.getName().equals("object")) {
-                        Log.i(TAG, "parseTMXMap: ");
+                        Log.i(TAG, "parseTMXMap: " + xml.getAttributeValue(null, "name"));
+
                         if (xml.getAttributeValue(null, "name").equals("spawn")) {
                             spawn = new PointF(xml.getAttributeIntValue(null, "x", 0) * tileRatio, xml.getAttributeIntValue(null, "y", 0) * tileRatio);
-
-                        } else if (xml.getAttributeValue(null, "name").equals("exit")) {
+                        } else {
+                            String name = xml.getAttributeValue(null, "name");
 
                             int x = xml.getAttributeIntValue(null, "x", 0);
                             int y = xml.getAttributeIntValue(null, "y", 0);
@@ -109,7 +114,26 @@ public class Game {
                             int eWidth = xml.getAttributeIntValue(null, "width", 0);
                             int eHeight = xml.getAttributeIntValue(null, "height", 0);
 
-                            exit = new RectF(x * tileRatio, y * tileRatio, (x + eWidth) * tileRatio, (y + eHeight) * tileRatio);
+                            RectF r = new RectF(x * tileRatio, y * tileRatio, (x + eWidth) * tileRatio, (y + eHeight) * tileRatio);
+
+                            if (!regions.containsKey(name)) {
+                                regions.put(name, r);
+
+                                Log.i("Region Added", (name));
+                            } else {
+                                int count = 0;
+
+                                for (String key : regions.keySet()) {
+                                    if (key.startsWith(name)) {
+                                        count++;
+                                    }//if
+                                }//for
+
+                                regions.put(name + count, r);
+
+                                Log.i("Region Added", (name + count));
+                            }//else
+
                         }//else
                     }//elseif
                 } else if (READ_STRING) {
@@ -128,6 +152,12 @@ public class Game {
         result.setSpawn(spawn);
         Log.i(TAG, "parseTMXMap: " + exit);
         result.setExit(exit);
+
+        for (java.util.Map.Entry<String, RectF> entry : regions.entrySet()) {
+
+            result.addRegion(entry.getKey(), entry.getValue());
+
+        }//for
 
         return result;
     }//parseMap

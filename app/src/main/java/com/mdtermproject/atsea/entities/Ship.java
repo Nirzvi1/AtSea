@@ -128,9 +128,9 @@ public class Ship {
 
             float turn = dampenAngularVelocity(filterAngle(360 - targetAngle) - rotate.getAngle());
 
-            attemptRotate(turn);
+//            attemptRotate(turn);
+            rotate(turn);
 
-            Log.i("Latency", v + "");
             float dx = (float) (v * Math.cos(Math.toRadians(rotate.getAngle())) * latency);
             float dy = (float) (v * Math.sin(Math.toRadians(rotate.getAngle())) * latency);
 
@@ -138,12 +138,23 @@ public class Ship {
                 Game.refreshForeground();
             }//if
 
-            attemptTranslate(dx, 0);
-            attemptTranslate(0, dy);
+//            attemptTranslate(dx, 0);
+//            attemptTranslate(0, dy);
+
+            translate(dx, dy);
+            if (Game.getMap().collide(this)) {
+                translate(-dx, -dy);
+            }
 
             if (Math.hypot(dx, dy) > 0.01) {
                 Game.refreshBackground();
                 Game.refreshGUI(); //update mini map
+            }//if
+
+            String region = Game.getMap().inWhatRegion(getCentre());
+
+            if (region != null) {
+                Log.i("REGION", region);
             }//if
 
         }//if

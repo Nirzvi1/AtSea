@@ -5,9 +5,14 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.util.Log;
 
+import com.mdtermproject.atsea.entities.Ship;
 import com.mdtermproject.atsea.graphics.Graphics;
 import com.mdtermproject.atsea.utils.TransformationMatrix;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.mdtermproject.atsea.graphics.Graphics.TILE_SIZE;
 
@@ -25,6 +30,8 @@ public class Map {
     private PointF spawn;
     private RectF exit;
 
+    private HashMap<String, RectF> regions;
+
     public Map(int w, int h, byte[] raw) {
         this.w = w;
         this.h = h;
@@ -35,6 +42,8 @@ public class Map {
         }//for
 
         miniMapBitmap = generateMiniMapBitmap();
+
+        regions = new HashMap<>();
     }//Map
 
     public void setSpawn(PointF spawn) {
@@ -131,6 +140,47 @@ public class Map {
 
     }
 
+    public boolean collide(Ship entity) {
+
+        double[][] corners = entity.getCorners();
+        PointF centre = entity.getCentre();
+
+        for(int i = 0; i < corners.length; i++) {
+
+            if ((corners[i][0] < 0 || corners[i][1] < 0
+                    || corners[i][0] > w * TILE_SIZE || corners[i][1] > h * TILE_SIZE)
+                    || mapArray[(int) (corners[i][0] / TILE_SIZE) + w * (int) (corners[i][1] / TILE_SIZE)] != 0) {
+
+                double relativeX = corners[i][0] - centre.x;
+                double relativeY = corners[i][1] - centre.y;
+
+                double degrees = Math.toDegrees(Math.atan2(-relativeY, relativeX));
+
+                Log.i("Degrees1", degrees + "");
+
+                if (degrees < 0) {
+                    degrees += 360;
+                }//if
+
+                if (degrees < 180) {
+                    degrees = 180 - degrees;
+                } else {
+                    degrees = 540 - degrees;
+                }//elseif
+
+//                degrees = ((degrees % 360) + 360) % 360;
+
+                entity.setTargetMotion(5, (float) degrees);
+
+                Log.i("Degrees", degrees + "");
+
+                return true;
+            }//if
+        }//for
+
+        return false;
+    }
+
     public int doesCollide(double[][] corners) {
 
         for(int i = 0; i < corners.length; i++) {
@@ -147,6 +197,41 @@ public class Map {
 
         return -1;
     }
+
+    public void addRegion(String name, RectF r) {
+        if (!regions.containsKey(name)) {
+            regions.put(name, r);
+
+            Log.i("Region Added", (name));
+        } else {
+            int count = 0;
+
+            for (String key : regions.keySet()) {
+                if (key.startsWith(name)) {
+                    count++;
+                }//if
+            }//for
+
+            regions.put(name + count, r);
+
+            Log.i("Region Added", (name + count));
+        }//else
+    }//addRegion
+
+    public String inWhatRegion(PointF p) {
+
+        for (String key : regions.keySet()) {
+            if (inRegion(key, p)) {
+                return key;
+            }//if
+        }//for
+
+        return null;
+    }
+
+    public boolean inRegion(String regionName, PointF p) {
+        return regions.get(regionName).contains(p.x, p.y);
+    }//inRegion
 
     public boolean isOverExit(PointF p){
         return exit.contains(p.x, p.y);

@@ -313,7 +313,7 @@
   <object id="3" name="market" x="3266" y="1731" width="703" height="253"/>
   <object id="4" name="shipyard" x="2946" y="3135" width="830" height="384"/>
   <object id="5" name="bank" x="706" y="3458" width="317" height="445"/>
-  <object id="6" name="spawn" x="1990" y="646" width="60" height="50"/>
+  <object id="6" name="spawn" x="1990" y="666" width="60" height="50"/>
   <object id="8" name="exit" x="-8" y="1048" width="64" height="2400"/>
  </objectgroup>
 </map>
